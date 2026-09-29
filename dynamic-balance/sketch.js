@@ -50,139 +50,59 @@ function setup() {
     ),
   ]);
 
-  // 첫 번째 주사위
-  let dice01 = Bodies.rectangle(
-    width / 2 - 180,
-    120,
-    100,
-    100,
-    {
-      density: 0.0005,
-      restitution: 0.75,
-      friction: 0.4,
-      frictionAir: 0.003,
+  // ---------------------------
+  // 주사위 5개 한 번에 생성
+  // ---------------------------
 
-      fill: "#c1c1c1",
-      strokeFill: "#000000",
+  let diceCount = 5;
 
-      chamfer: {
-        radius: 15,
-      },
-    }
-  );
+  for (let i = 0; i < diceCount; i++) {
 
-  dice01.diceValue = 2;
+    // 두 종류를 번갈아 배치
+    let diceType = i % 2;
 
+    // 종류 1 = 주사위 2
+    // 종류 2 = 주사위 3
+    let diceValue = diceType === 0 ? 2 : 3;
 
-  // 두 번째 주사위
-  let dice02 = Bodies.rectangle(
-    width / 2 - 90,
-    40,
-    100,
-    100,
-    {
-      density: 0.0005,
-      restitution: 0.75,
-      friction: 0.4,
-      frictionAir: 0.003,
+    // 색상도 종류에 따라 다르게
+    let diceColor = diceType === 0
+      ? "#f1f1f1"
+      : "#7f7f7f";
 
-      fill: "#c1c1c1",
-      strokeFill: "#000000",
+    let dice = Bodies.rectangle(
+      width / 2 - 180 + i * 90,
+      40 + (i % 2) * 80,
+      100,
+      100,
+      {
+        density: 0.0003,
+        restitution: 0.9,
+        friction: 0.4,
+        frictionAir: 0.003,
 
-      chamfer: {
-        radius: 15,
-      },
-    }
-  );
+        fill: diceColor,
+        strokeFill: "#000000",
 
-  dice02.diceValue = 3;
+        chamfer: {
+          radius: 15,
+        },
+      }
+    );
 
+    // 주사위 종류 정보 저장
+    dice.diceValue = diceValue;
 
-  // 세 번째 주사위
-  let dice03 = Bodies.rectangle(
-    width / 2,
-    100,
-    100,
-    100,
-    {
-      density: 0.0005,
-      restitution: 0.75,
-      friction: 0.4,
-      frictionAir: 0.003,
-
-      fill: "#c1c1c1",
-      strokeFill: "#000000",
-
-      chamfer: {
-        radius: 15,
-      },
-    }
-  );
-
-  dice03.diceValue = 2;
-
-
-  // 네 번째 주사위
-  let dice04 = Bodies.rectangle(
-    width / 2 + 90,
-    20,
-    100,
-    100,
-    {
-      density: 0.0005,
-      restitution: 0.75,
-      friction: 0.4,
-      frictionAir: 0.003,
-
-      fill: "#c1c1c1",
-      strokeFill: "#000000",
-
-      chamfer: {
-        radius: 15,
-      },
-    }
-  );
-
-  dice04.diceValue = 3;
-
-
-  // 다섯 번째 주사위
-  let dice05 = Bodies.rectangle(
-    width / 2 + 180,
-    80,
-    100,
-    100,
-    {
-      density: 0.0005,
-      restitution: 0.75,
-      friction: 0.4,
-      frictionAir: 0.003,
-
-      fill: "#c1c1c1",
-      strokeFill: "#000000",
-
-      chamfer: {
-        radius: 15,
-      },
-    }
-  );
-
-  dice05.diceValue = 2;
-
-
-  // 배열에 넣기
-  dices.push(dice01);
-  dices.push(dice02);
-  dices.push(dice03);
-  dices.push(dice04);
-  dices.push(dice05);
+    // 배열에 추가
+    dices.push(dice);
+  }
 
   Composite.add(engine.world, dices);
 }
 
 
 function draw() {
-  background("#ebebeb");
+  background("#d1d1d1");
 
   Engine.update(engine);
 
@@ -194,7 +114,7 @@ function draw() {
   if (frameCount > 150 && frameCount < 200) {
 
     for (let dice of dices) {
-      applyWind(dice, 0.009);
+      applyWind(dice, 0.012);
     }
 
   }
