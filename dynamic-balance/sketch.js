@@ -4,7 +4,7 @@ const Composite = Matter.Composite;
 const MBody = Matter.Body;
 
 let engine;
-let dice01, dice02;
+let dices = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -21,6 +21,7 @@ function setup() {
   // walls
   let wallThickness = 80;
   let margin = 20;
+
   Composite.add(engine.world, [
     // 바닥
     Bodies.rectangle(width / 2, height - margin, width, margin, {
@@ -38,116 +39,233 @@ function setup() {
     }),
 
     // 오른쪽 벽
-    Bodies.rectangle(width - wallThickness, height / 2, margin, height, {
-      isStatic: true,
-    }),
+    Bodies.rectangle(
+      width - wallThickness,
+      height / 2,
+      margin,
+      height,
+      {
+        isStatic: true,
+      }
+    ),
   ]);
 
-  // dice01 = 주사위 2
-  dice01 = Bodies.rectangle(width / 2 - 90, 120, 100, 100, {
-    density: 0.0005,
-    restitution: 0.75,
-    friction: 0.4,
-    frictionAir: 0.003,
-    fill: "#ffffff",
-    strokeFill: "#ffffff",
-    chamfer: {
-      radius: 15,
-    },
-    label: "dice01",
-  });
+  // 첫 번째 주사위
+  let dice01 = Bodies.rectangle(
+    width / 2 - 180,
+    120,
+    100,
+    100,
+    {
+      density: 0.0005,
+      restitution: 0.75,
+      friction: 0.4,
+      frictionAir: 0.003,
 
-  // dice02 = 주사위 3
-  dice02 = Bodies.rectangle(width / 2 + 90, 40, 100, 100, {
-    density: 0.0005,
-    restitution: 0.75,
-    friction: 0.4,
-    frictionAir: 0.003,
-    fill: "#c1c1c1",
-    strokeFill: "#c1c1c1",
-    strokeWeight:(2),
-    chamfer: {
-      radius: 15,
-    },
-    label: "dice02",
-  });
+      fill: "#c1c1c1",
+      strokeFill: "#000000",
 
-  Composite.add(engine.world, [dice01, dice02]);
+      chamfer: {
+        radius: 15,
+      },
+    }
+  );
+
+  dice01.diceValue = 2;
+
+
+  // 두 번째 주사위
+  let dice02 = Bodies.rectangle(
+    width / 2 - 90,
+    40,
+    100,
+    100,
+    {
+      density: 0.0005,
+      restitution: 0.75,
+      friction: 0.4,
+      frictionAir: 0.003,
+
+      fill: "#c1c1c1",
+      strokeFill: "#000000",
+
+      chamfer: {
+        radius: 15,
+      },
+    }
+  );
+
+  dice02.diceValue = 3;
+
+
+  // 세 번째 주사위
+  let dice03 = Bodies.rectangle(
+    width / 2,
+    100,
+    100,
+    100,
+    {
+      density: 0.0005,
+      restitution: 0.75,
+      friction: 0.4,
+      frictionAir: 0.003,
+
+      fill: "#c1c1c1",
+      strokeFill: "#000000",
+
+      chamfer: {
+        radius: 15,
+      },
+    }
+  );
+
+  dice03.diceValue = 2;
+
+
+  // 네 번째 주사위
+  let dice04 = Bodies.rectangle(
+    width / 2 + 90,
+    20,
+    100,
+    100,
+    {
+      density: 0.0005,
+      restitution: 0.75,
+      friction: 0.4,
+      frictionAir: 0.003,
+
+      fill: "#c1c1c1",
+      strokeFill: "#000000",
+
+      chamfer: {
+        radius: 15,
+      },
+    }
+  );
+
+  dice04.diceValue = 3;
+
+
+  // 다섯 번째 주사위
+  let dice05 = Bodies.rectangle(
+    width / 2 + 180,
+    80,
+    100,
+    100,
+    {
+      density: 0.0005,
+      restitution: 0.75,
+      friction: 0.4,
+      frictionAir: 0.003,
+
+      fill: "#c1c1c1",
+      strokeFill: "#000000",
+
+      chamfer: {
+        radius: 15,
+      },
+    }
+  );
+
+  dice05.diceValue = 2;
+
+
+  // 배열에 넣기
+  dices.push(dice01);
+  dices.push(dice02);
+  dices.push(dice03);
+  dices.push(dice04);
+  dices.push(dice05);
+
+  Composite.add(engine.world, dices);
 }
 
+
 function draw() {
-  background("#1A1A1A");
+  background("#ebebeb");
+
   Engine.update(engine);
+
 
   // ---------------------------
   // 바람 구간
-  // 180프레임~320프레임 동안만 바람 작동
   // ---------------------------
+
   if (frameCount > 150 && frameCount < 200) {
-    applyWind(dice01, 0.007);
-    applyWind(dice02, 0.012);
+
+    for (let dice of dices) {
+      applyWind(dice, 0.009);
+    }
+
   }
 
-  // -------------------
-  // Dice01 몸체
-  // -------------------
-  beginShape();
-  fill(dice01.fill);
-  stroke(dice01.strokeFill);
-  strokeWeight(2);
 
-  for (let i = 0; i < dice01.vertices.length; i++) {
-    let x = dice01.vertices[i].x;
-    let y = dice01.vertices[i].y;
-    vertex(x, y);
+  // ---------------------------
+  // draw dice
+  // ---------------------------
+
+  for (let dice of dices) {
+
+    // dice 몸체
+    beginShape();
+
+    fill(dice.fill);
+    stroke(dice.strokeFill);
+    strokeWeight(2);
+
+    for (let v of dice.vertices) {
+      vertex(v.x, v.y);
+    }
+
+    endShape(CLOSE);
+
+
+    // dice 주사위 눈
+    push();
+
+    translate(
+      dice.position.x,
+      dice.position.y
+    );
+
+    rotate(dice.angle);
+
+    fill("#1A1A1A");
+    noStroke();
+
+
+    // 주사위 2
+    if (dice.diceValue === 2) {
+      circle(-22, -22, 20);
+      circle(22, 22, 20);
+    }
+
+
+    // 주사위 3
+    if (dice.diceValue === 3) {
+      circle(-22, -22, 18);
+      circle(0, 0, 18);
+      circle(22, 22, 18);
+    }
+
+    pop();
   }
-  endShape(CLOSE);
-
-  // dice01 주사위 눈 = 2
-  push();
-  translate(dice01.position.x, dice01.position.y);
-  rotate(dice01.angle);
-
-  fill("#1A1A1A");
-  noStroke();
-  circle(-22, -22, 20);
-  circle(22, 22, 20);
-  pop();
-
-  // -------------------
-  // Dice02 몸체
-  // -------------------
-  beginShape();
-  fill(dice02.fill);
-  stroke(dice02.strokeFill);
-  strokeWeight(2);
-
-  for (let v of dice02.vertices) {
-    vertex(v.x, v.y);
-  }
-  endShape(CLOSE);
-
-  // dice02 주사위 눈 = 3
-  push();
-  translate(dice02.position.x, dice02.position.y);
-  rotate(dice02.angle);
-
-  fill("#1A1A1A");
-  noStroke();
-  circle(-22, -22, 18);
-  circle(0, 0, 18);
-  circle(22, 22, 18);
-  pop();
 }
 
+
+// ---------------------------
 // 바람 함수
+// ---------------------------
+
 function applyWind(body, strength) {
   MBody.applyForce(
     body,
+
     {
       x: body.position.x,
       y: body.position.y - 30,
     },
+
     {
       x: strength,
       y: -strength * 0.35,
