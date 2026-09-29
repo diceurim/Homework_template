@@ -20,6 +20,7 @@ function setup() {
 
   // walls
   let wallThickness = 80;
+  let floorThickness = 80;
   let margin = 20;
 
   Composite.add(engine.world, [
