@@ -6,9 +6,6 @@
 
   <meta charset="UTF-8" />
 
-  <!-- 모바일 필수:
-       이 태그가 없으면 폰에서 PC용 화면처럼 축소되어
-       터치가 스크롤/확대로 해석될 수 있음 -->
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
@@ -19,9 +16,9 @@
 
   <style>
 
-    /* 허브 페이지는 스크롤/선택되지 않게 고정 */
     html,
     body {
+
       height: 100%;
       margin: 0;
 
@@ -34,11 +31,12 @@
       -webkit-touch-callout: none;
 
       font-family: sans-serif;
+
     }
 
 
-    /* 왼쪽 메뉴 */
     #menu {
+
       position: fixed;
 
       top: 0;
@@ -51,11 +49,15 @@
 
       box-sizing: border-box;
 
-      background: #fff;
+      background: #ffffff;
+
+      z-index: 10;
+
     }
 
 
     #menu a {
+
       display: block;
 
       margin-bottom: 10px;
@@ -63,12 +65,14 @@
       cursor: pointer;
 
       color: blue;
+
+      text-decoration: underline;
+
     }
 
 
-    /* iframe 영역:
-       메뉴 100px을 제외한 나머지 화면 */
     #stage {
+
       position: fixed;
 
       top: 0;
@@ -77,30 +81,28 @@
       left: 100px;
 
       overflow: hidden;
+
     }
 
 
     #viewer {
+
       display: block;
 
       width: 100%;
       height: 100%;
 
       border: 0;
+
     }
 
   </style>
-
-
-  <!-- Matter.js CDN -->
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js">
-  </script>
 
 </head>
 
 
 <body>
+
 
   <div id="menu">
 
@@ -108,8 +110,8 @@
       Homework1
     </a>
 
-    <a onclick="loadHomework('Delete, Delete, Delete')">
-      Homework2_
+    <a onclick="loadHomework('delete-delete-delete')">
+      Homework2
     </a>
 
     <a onclick="loadHomework('Homework3')">
@@ -121,7 +123,6 @@
 
   <div id="stage">
 
-    <!-- 처음 열었을 때 보여줄 과제 -->
     <iframe
       id="viewer"
       src="dynamic-balance/index.html">
@@ -132,16 +133,15 @@
 
   <script>
 
-    // 메뉴 클릭 시
-    // iframe에 해당 폴더의 index.html을 불러옴
     function loadHomework(folderName) {
 
       document.getElementById("viewer").src =
-        folderName + "/index.html";
+        "./" + folderName + "/index.html";
 
     }
 
   </script>
+
 
 </body>
 
