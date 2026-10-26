@@ -61,6 +61,8 @@ function openLolling() {
       item.breakable=item.parts.length>1 && item.thrown>0;
     }
     el.addEventListener('pointerup',release);el.addEventListener('pointercancel',release);
+    el.addEventListener('pointerenter',()=>{world.hover=item;});
+    el.addEventListener('pointerleave',()=>{if(world.hover===item)world.hover=null;});
     return item;
   }
   walls();
@@ -77,6 +79,14 @@ function openLolling() {
   function tick(now){if(lollingWorld!==world)return;
     const dt=Math.min(16.667,now-world.last);world.last=now;
     Body.applyForce(world.dice,world.dice.position,{x:(world.home.x-world.dice.position.x)*.00007,y:(world.home.y-world.dice.position.y)*.00007});
+    // 합쳐진 직후에는 전체가 느려졌다가 1.8초 동안 원래 속도로 돌아옵니다.
+    const slow=world.slowStart?Math.min(1,(now-world.slowStart)/1800):1;
+    engine.timing.timeScale=.25+.75*slow*slow;
+    // 마우스를 올린 메모와 방금 합쳐진 메모는 천천히 멈춰 읽을 수 있게 합니다. 던진 메모는 그대로 날아갑니다.
+    for(const item of world.items){
+      if(item.body.isStatic||item.thrown>now)continue;
+      if(item===world.hover||item.readUntil>now){const v=item.body.velocity;Body.setVelocity(item.body,{x:v.x*.88,y:v.y*.88});}
+    }
     Engine.update(engine,dt);
     for(const item of world.splits) {
       if(!world.items.includes(item))continue;
@@ -91,9 +101,18 @@ function openLolling() {
     for(const [a,b] of world.queue){if(!world.items.includes(a)||!world.items.includes(b))continue;
       const pos={x:(a.body.position.x+b.body.position.x)/2,y:(a.body.position.y+b.body.position.y)/2},v={x:(a.body.velocity.x+b.body.velocity.x)/2,y:(a.body.velocity.y+b.body.velocity.y)/2};
       for(const item of [a,b]){Composite.remove(engine.world,item.body);item.el.remove();world.items.splice(world.items.indexOf(item),1);}
-      const merged=add(a.text+'\n\n'+b.text,pos.x,pos.y,v,[...a.parts,...b.parts]);
-      merged.cooldown=performance.now()+300;
+      // 합쳐진 메모는 거의 멈춘 채 잠시 밝게 남아 새 조합을 읽을 시간을 줍니다.
+      const merged=add(a.text+'\n\n'+b.text,pos.x,pos.y,{x:v.x*.2,y:v.y*.2},[...a.parts,...b.parts]);
+      merged.readUntil=merged.cooldown=performance.now()+2600;
+      world.fresh=merged;world.slowStart=performance.now();
     }world.queue=[];
+    // 잡은 메모 > 마우스를 올린 메모 > 방금 합쳐진 메모 순서로 하나만 밝힙니다.
+    const alive=item=>item&&world.items.includes(item);
+    const focus=[world.drag?.item,world.hover,world.fresh?.readUntil>now?world.fresh:null].find(alive)||null;
+    if(focus!==world.focus){
+      world.focus?.el.classList.remove('is-focus');focus?.el.classList.add('is-focus');
+      document.getElementById('lollingField').classList.toggle('has-focus',!!focus);world.focus=focus;
+    }
     world.items.forEach(item=>{const p=item.body.position;item.el.style.transform=`translate(${p.x-item.w/2}px,${p.y-item.h/2}px)`;});
     world.frame=requestAnimationFrame(tick);
   }
