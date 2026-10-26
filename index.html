@@ -35,6 +35,7 @@
     }
 
 
+    /* 목록은 화면 위로 미끄러져 나오는 서랍이라, 과제 화면 크기를 줄이지 않습니다. */
     #menu {
 
       position: fixed;
@@ -42,7 +43,7 @@
       top: 0;
       left: 0;
 
-      width: 100px;
+      width: 140px;
       height: 100%;
 
       padding: 20px;
@@ -51,7 +52,69 @@
 
       background: #ffffff;
 
+      box-shadow: 4px 0 16px #0004;
+
+      transform: translateX(-100%);
+
+      transition: transform 0.25s ease;
+
       z-index: 10;
+
+    }
+
+
+    body.menu-open #menu {
+
+      transform: translateX(0);
+
+    }
+
+
+    /* 왼쪽 가장자리에 붙은 탭: 누르면 목록이 열리고 닫힙니다. */
+    #menu-tab {
+
+      position: fixed;
+
+      top: 20px;
+      left: 0;
+
+      width: 28px;
+      height: 44px;
+
+      padding: 0;
+
+      border: 0;
+      border-radius: 0 6px 6px 0;
+
+      background: #ffffff;
+
+      color: #121212;
+
+      font-size: 16px;
+
+      cursor: pointer;
+
+      opacity: 0.6;
+
+      transition: left 0.25s ease, opacity 0.15s ease;
+
+      z-index: 11;
+
+    }
+
+
+    #menu-tab:hover,
+    #menu-tab:focus-visible,
+    body.menu-open #menu-tab {
+
+      opacity: 1;
+
+    }
+
+
+    body.menu-open #menu-tab {
+
+      left: 140px;
 
     }
 
@@ -78,7 +141,7 @@
       top: 0;
       right: 0;
       bottom: 0;
-      left: 100px;
+      left: 0;
 
       overflow: hidden;
 
@@ -102,6 +165,17 @@
 
 
 <body>
+
+
+  <button
+    id="menu-tab"
+    type="button"
+    aria-controls="menu"
+    aria-expanded="false"
+    aria-label="과제 목록 열기"
+    onclick="toggleMenu()">
+    ☰
+  </button>
 
 
   <div id="menu">
@@ -137,6 +211,21 @@
 
       document.getElementById("viewer").src =
         "./" + folderName + "/index.html";
+
+      toggleMenu(false);
+
+    }
+
+
+    function toggleMenu(open = !document.body.classList.contains("menu-open")) {
+
+      document.body.classList.toggle("menu-open", open);
+
+      const tab = document.getElementById("menu-tab");
+
+      tab.setAttribute("aria-expanded", String(open));
+      tab.setAttribute("aria-label", open ? "과제 목록 닫기" : "과제 목록 열기");
+      tab.textContent = open ? "×" : "☰";
 
     }
 
