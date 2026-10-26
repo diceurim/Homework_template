@@ -1,7 +1,4 @@
-.find-heading, #findArchive, #findStatus { display: none; }
-.is-find .find-heading { display: block; position: absolute; left: 32%; top: 8%; width: 36%; text-align: center; color: #fff; }
-.find-heading h1 { margin: 0 0 24px; }
-.find-heading p { color: #bcbcbc; font: 12pt/1.5 var(--memo-sans); margin: 0; }
+#findArchive, #findStatus { display: none; }
 .is-find #findArchive { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; align-content: start; position: absolute; left: 5.5%; top: 15%; width: 23%; height: 70%; overflow-y: auto; pointer-events: auto; padding: 4px; }
 .find-card { aspect-ratio: .84; border: 1px solid transparent; border-radius: 4px; padding: 16px 12px; display: flex; align-items: flex-end; background: #d2d2d2; color: #555; cursor: pointer; text-align: left; font: 11px/1.4 var(--memo-sans); transition: transform .2s,background .2s; }
 .find-card:nth-child(4n+2), .find-card:nth-child(4n+3) { background: #8f8f8f; color: #fff; }
@@ -20,7 +17,6 @@
 @media(max-width:700px) {
  .is-find #writingView { position: absolute; height: 1300px; }
  body.is-find { overflow-y: auto; }
- .is-find .find-heading { left: 7%; width: 80%; top: 40px; }
  .is-find #findArchive { left: 7%; top: 180px; width: 86%; height: 320px; grid-template-columns: repeat(3,minmax(0,1fr)); }
  .is-find #findStatus { left: 7%; top: 520px; width: 86%; }
  .is-find .writing-column { left: 7%; right: auto; top: 600px; width: 86%; height: 570px; }
@@ -41,7 +37,7 @@
 .is-find .writing-date-area { padding: 24px 32px 20px; }
 .is-find .writing-paper { padding: 12px 32px 26px; }
 /* 사용자 지시문은 명조체 + 0.5px 스트로크로 통일합니다. */
-.find-heading p, .writing-prompt, .save-hint, .is-find #findStatus, .find-empty, #rememberHint, .memory-empty p, .writing-input::placeholder {
+.writing-prompt, .save-hint, .is-find #findStatus, .find-empty, #rememberHint, .memory-empty p, .writing-input::placeholder {
  font-family: var(--memo-serif); font-weight: 400; -webkit-text-stroke: .5px currentColor;
 }
 .is-find #findStatus { line-height: 1.5; }
@@ -49,11 +45,9 @@
  .is-find .writing-column { width:43%; }
  .is-find .writing-date-area { padding-left:22px; padding-right:22px; }
  .is-find .writing-paper { padding-left:22px; padding-right:22px; }
- .is-find .find-heading { left:32%; width:27%; }
 }
 @media(max-width:700px) {
  .is-find .writing-column { left:7%; right:auto; top:600px; width:86%; height:570px; }
- .is-find .find-heading { left:7%; width:80%; }
  .is-find .writing-date-area { padding:20px 24px 16px; }
  .is-find .writing-paper { padding:8px 24px 22px; }
 }

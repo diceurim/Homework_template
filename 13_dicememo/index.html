@@ -95,12 +95,12 @@
   <link rel="stylesheet" href="remember.css?v=2">
   <script src="remember.js?v=1"></script>
   <link rel="stylesheet" href="memo-theme.css?v=6">
-  <link rel="stylesheet" href="find.css?v=2">
+  <link rel="stylesheet" href="find.css?v=3">
   <script src="find.js?v=2"></script>
 <script src="../addons/matter.min.js"></script>
-<script src="lolling.js?v=2"></script>
-<link rel="stylesheet" href="lolling.css?v=1">
-<link rel="stylesheet" href="experiment.css?v=7">
+<script src="lolling.js?v=3"></script>
+<link rel="stylesheet" href="lolling.css?v=2">
+<link rel="stylesheet" href="experiment.css?v=8">
 <script src="experiment.js?v=3"></script>
 </head>
 <body>
@@ -122,7 +122,6 @@
     <button class="face-button" data-face="6" type="button" aria-label="l"><img src="assets/face-6.png" alt=""></button>
   </nav>
   <section id="writingView" hidden aria-label="W 기록하기">
-    <header class="find-heading"><h1 class="writing-serif">F : Find<br>발견하기</h1><p>아카이브에서 예상하지 못한 메모를 찾아 발견하세요.</p></header>
     <section id="findArchive" aria-label="날짜로 고르는 이전 메모"></section>
     <p id="findStatus" role="status" aria-live="polite"></p>
     <section class="overlay-source-stack" aria-label="무작위 이전 기록 두 개">
@@ -163,11 +162,10 @@
     </div>
   </section>
 <section id="lollingView" hidden aria-label="L 유희하기">
-<div class="lolling-heading"><h1 class="writing-serif">l : Lolling<br>유희하기</h1><p>메모를 잡고 던져 다른 생각과 합쳐보세요.</p></div>
+
 <div id="lollingField"></div><p id="lollingEmpty" hidden>저장한 메모가 아직 없어요. W 기록하기에서 생각을 남겨주세요.</p>
 <button id="lollingClose" class="writing-close" aria-label="유희하기 닫기" title="닫기 (Esc)"></button></section>
   <section id="experimentView" hidden aria-label="E 실험하기">
-    <div class="experiment-heading"><h1 class="writing-serif">e : Experiment<br>실험하기</h1><p>슬롯을 돌려 서로 다른 시기의 기록을 나란히 놓아보세요.</p></div>
     <p id="experimentEmpty" hidden>저장한 메모가 아직 없어요. W 기록하기에서 생각을 남겨주세요.</p>
     <div class="experiment-stage">
       <div class="experiment-machine">

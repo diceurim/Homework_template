@@ -1,8 +1,6 @@
 #experimentView[hidden], .experiment-stage[hidden] { display: none; }
 #experimentView { position: fixed; inset: 0; z-index: 5; color: #bcbcbc; overflow-x: hidden; overflow-y: auto; --row: clamp(64px, 9vh, 92px); --peek: .2; }
-.experiment-heading { position: absolute; top: 7%; left: 25%; width: 50%; text-align: center; }
-.experiment-heading h1 { color: #fff; margin: 0 0 22px; }
-.experiment-heading p, #experimentEmpty, #experimentStatus { margin: 0; font: 12pt/1.5 var(--memo-serif); -webkit-text-stroke: .5px currentColor; }
+#experimentEmpty, #experimentStatus { margin: 0; font: 12pt/1.5 var(--memo-serif); -webkit-text-stroke: .5px currentColor; }
 #experimentEmpty { position: absolute; top: 45%; left: 25%; width: 50%; text-align: center; }
 /* 왼쪽 아래 주사위를 피해 오른쪽으로 비켜섭니다. */
 .experiment-stage { position: absolute; top: 22%; left: max(320px, calc(50% - 320px)); width: min(640px, calc(96vw - 320px)); display: flex; flex-direction: column; gap: 18px; padding-bottom: 40px; }
@@ -59,7 +57,7 @@
 #experimentClose { z-index: 10; }
 @media (max-width: 860px) and (min-width: 601px) { .reel-date { display: none; } }
 @media (max-width: 600px) {
- .experiment-heading, #experimentEmpty { left: 7%; width: 86%; top: 40px; }
+ #experimentEmpty { left: 7%; width: 86%; }
  #experimentEmpty { top: 45%; }
  .experiment-stage { left: 5%; width: 90%; top: 170px; }
  .experiment-machine { grid-template-columns: minmax(0, 1fr) 40px; gap: 10px; }

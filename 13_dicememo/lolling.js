@@ -15,10 +15,6 @@ function openLolling() {
     world.walls.forEach(b=>Composite.remove(engine.world,b));
     world.walls=[Bodies.rectangle(innerWidth/2,-50,innerWidth+200,100,{isStatic:true,restitution:1}),Bodies.rectangle(innerWidth/2,innerHeight+50,innerWidth+200,100,{isStatic:true,restitution:1}),Bodies.rectangle(-50,innerHeight/2,100,innerHeight+200,{isStatic:true,restitution:1}),Bodies.rectangle(innerWidth+50,innerHeight/2,100,innerHeight+200,{isStatic:true,restitution:1})];
     Composite.add(engine.world,world.walls);
-    if(world.heading) Composite.remove(engine.world,world.heading);
-    const rect=document.querySelector('.lolling-heading').getBoundingClientRect();
-    world.heading=Bodies.rectangle(rect.x+rect.width/2,rect.y+rect.height/2,rect.width+16,rect.height+16,{isStatic:true,restitution:1,friction:0});
-    Composite.add(engine.world,world.heading);
   }
   world.resize=()=>{
     walls();
