@@ -1,0 +1,11 @@
+#lollingView[hidden] { display:none; }
+#lollingView { position:fixed; inset:0; z-index:5; pointer-events:none; color:#bcbcbc; overflow:hidden; }
+.lolling-heading { position:absolute; top:7%; left:25%; width:50%; text-align:center; z-index:2; pointer-events:none; }
+.lolling-heading h1 { color:#fff; margin:0 0 22px; }
+.lolling-heading p, #lollingEmpty { font:12pt/1.5 var(--memo-serif); -webkit-text-stroke:.5px currentColor; }
+#lollingField { position:absolute; inset:0; }
+.lolling-text { position:absolute; left:0; top:0; padding:0; border:0; background:none; outline:none; font-family:var(--memo-sans); line-height:1.4; white-space:pre-wrap; overflow-wrap:anywhere; color:#bcbcbc; user-select:none; touch-action:none; cursor:grab; pointer-events:auto; will-change:transform; }
+.lolling-text.held { color:#fff; cursor:grabbing; z-index:3; }
+.lolling-text:focus-visible { color:#fff; }
+#lollingEmpty { position:absolute; top:45%; left:25%; width:50%; text-align:center; }
+#lollingClose { z-index:10; }

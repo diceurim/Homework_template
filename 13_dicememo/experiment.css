@@ -1,0 +1,76 @@
+#experimentView[hidden], .experiment-stage[hidden] { display: none; }
+#experimentView { position: fixed; inset: 0; z-index: 5; color: #bcbcbc; overflow-x: hidden; overflow-y: auto; --row: clamp(64px, 9vh, 92px); --peek: .2; }
+.experiment-heading { position: absolute; top: 7%; left: 25%; width: 50%; text-align: center; }
+.experiment-heading h1 { color: #fff; margin: 0 0 22px; }
+.experiment-heading p, #experimentEmpty, #experimentStatus { margin: 0; font: 12pt/1.5 var(--memo-serif); -webkit-text-stroke: .5px currentColor; }
+#experimentEmpty { position: absolute; top: 45%; left: 25%; width: 50%; text-align: center; }
+/* 왼쪽 아래 주사위를 피해 오른쪽으로 비켜섭니다. */
+.experiment-stage { position: absolute; top: 22%; left: max(320px, calc(50% - 320px)); width: min(640px, calc(96vw - 320px)); display: flex; flex-direction: column; gap: 18px; padding-bottom: 40px; }
+.experiment-machine { display: grid; grid-template-columns: minmax(0, 1fr) 56px; gap: 18px; }
+
+/* 슬롯 한 줄: 가운데 칸만 흰색, 위아래 이웃 칸은 살짝만 흐리게 보입니다. */
+#experimentReels { display: flex; flex-direction: column; gap: 8px; }
+.reel { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; height: calc((1 + 2 * var(--peek)) * var(--row)); }
+/* 선택 띠: 가운데 칸 위아래의 가는 선 */
+.reel::before, .reel::after { content: ''; position: absolute; left: 0; right: 0; height: 1px; background: #ffffff40; pointer-events: none; }
+.reel::before { top: calc(var(--peek) * var(--row)); }
+.reel::after { top: calc((1 + var(--peek)) * var(--row) - 1px); }
+.reel-window {
+ position: relative; overflow: hidden; color: #fff;
+ -webkit-mask-image: linear-gradient(to bottom, transparent, #0006 13.6%, #0009 14%, #000 14.8%, #000 85.2%, #0009 86%, #0006 86.4%, transparent);
+ mask-image: linear-gradient(to bottom, transparent, #0006 13.6%, #0009 14%, #000 14.8%, #000 85.2%, #0009 86%, #0006 86.4%, transparent);
+}
+/* 정지 상태의 다섯 칸 중 가운데 칸이 선택 띠 안에 오도록 올려 둡니다. */
+.reel-strip { position: absolute; left: 0; right: 0; top: calc((var(--peek) - 2) * var(--row)); will-change: transform; }
+.reel-cell { height: var(--row); display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+/* 날짜는 사각 박스, 메모는 모서리를 깎은 박스로 표시합니다. */
+.reel-date { flex: none; height: 100%; aspect-ratio: 1.2; display: grid; place-items: center; border: 1.5px solid currentColor; font: 12pt var(--memo-sans); letter-spacing: .02em; }
+.reel-text { --c: 12px; position: relative; flex: 1; min-width: 0; height: 100%; display: flex; align-items: center; padding: 0 20px; }
+.reel-text::before, .reel-text::after { content: ''; position: absolute; clip-path: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c)); }
+.reel-text::before { inset: 0; background: currentColor; }
+.reel-text::after { --c: 11.4px; inset: 1.5px; background: #121212; }
+.reel-text span { position: relative; z-index: 1; font: 12pt/1.4 var(--memo-sans); overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* 핀: 칸 왼쪽의 원형 버튼. 고정하면 흰 원으로 채워집니다. */
+.reel-pin { align-self: center; width: 40px; height: 40px; padding: 0; display: grid; place-items: center; border: 1.5px solid currentColor; border-radius: 50%; background: #121212; color: #bcbcbc; cursor: pointer; transition: color .15s, background .15s; }
+.reel-pin svg { width: 18px; height: 18px; }
+.reel-pin:hover:not(:disabled), .reel-pin:focus-visible { color: #fff; outline: none; }
+.reel-pin[aria-pressed=true] { background: #fff; border-color: #fff; color: #121212; }
+.reel-pin[aria-pressed=true] svg { fill: currentColor; }
+.reel-pin:disabled { opacity: .35; cursor: default; }
+
+/* 손잡이: 흰 받침 + 막대 + 둥근 손잡이. 당기면 막대가 아래로 젖혀집니다. */
+.slot-lever { position: relative; align-self: center; width: 56px; height: 190px; padding: 0; border: 0; background: none; cursor: pointer; }
+.lever-base { position: absolute; left: 4px; right: 4px; bottom: 0; height: 78px; border-radius: 9px; background: #f7f7f7; }
+.lever-base::after { content: ''; position: absolute; left: 50%; top: 10px; width: 16px; height: 46px; margin-left: -8px; border-radius: 8px; background: #6d6d6d; }
+.lever-arm { position: absolute; left: 50%; bottom: 30px; width: 8px; height: 124px; margin-left: -4px; border-radius: 4px; background: #bcbcbc; transform-origin: 50% 100%; }
+.lever-knob { position: absolute; left: 50%; top: -16px; width: 32px; height: 32px; margin-left: -16px; border-radius: 50%; background: #fff; transition: transform .15s; }
+.slot-lever:hover:not(:disabled) .lever-knob { transform: scale(1.08); }
+.slot-lever:focus-visible { outline: none; }
+.slot-lever:focus-visible .lever-knob { outline: 1px solid #fff; outline-offset: 3px; }
+.slot-lever:disabled { opacity: .35; cursor: default; }
+
+/* 조합을 보고 떠오른 생각을 적는 칸 */
+.experiment-lower { margin-right: 74px; display: flex; flex-direction: column; gap: 14px; }
+.experiment-paper { display: flex; flex-direction: column; padding: 18px 20px 14px; border-radius: 4px; background: #242424; }
+#experimentInput { min-height: 96px; border: 0; outline: none; resize: none; background: transparent; color: #fff; caret-color: #fff; font: 12pt/1.5 var(--memo-sans); }
+#experimentInput::placeholder { color: #6d6d6d; font-family: var(--memo-serif); -webkit-text-stroke: .5px currentColor; }
+.experiment-paper .save-hint { margin: 10px 0 0; }
+#experimentClose { z-index: 10; }
+@media (max-width: 860px) and (min-width: 601px) { .reel-date { display: none; } }
+@media (max-width: 600px) {
+ .experiment-heading, #experimentEmpty { left: 7%; width: 86%; top: 40px; }
+ #experimentEmpty { top: 45%; }
+ .experiment-stage { left: 5%; width: 90%; top: 170px; }
+ .experiment-machine { grid-template-columns: minmax(0, 1fr) 40px; gap: 10px; }
+ .reel { grid-template-columns: 34px minmax(0, 1fr); gap: 8px; }
+ .reel-pin { width: 34px; height: 34px; }
+ .reel-date { display: none; }
+ .slot-lever { width: 40px; height: 150px; }
+ .lever-base { height: 60px; }
+ .lever-base::after { height: 34px; width: 12px; margin-left: -6px; }
+ .lever-arm { bottom: 22px; height: 96px; width: 6px; margin-left: -3px; }
+ .lever-knob { width: 24px; height: 24px; margin-left: -12px; top: -12px; }
+ .experiment-lower { margin-right: 0; }
+ #experimentClose { position: fixed; }
+}
