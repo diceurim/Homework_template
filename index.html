@@ -159,6 +159,19 @@
 
     }
 
+
+    /* 13_dicememo는 브라우저 90% 확대/축소와 같은 화면으로 보여줍니다.
+       아이프레임을 1/0.9배 크기로 만든 뒤 0.9배로 줄여, 화면은 꽉 채우고 글자·요소 크기만 90%가 됩니다. */
+    #stage.is-zoom-90 #viewer {
+
+      width: calc(100% / 0.9);
+      height: calc(100% / 0.9);
+
+      transform: scale(0.9);
+      transform-origin: 0 0;
+
+    }
+
   </style>
 
 </head>
@@ -211,6 +224,8 @@
 
       document.getElementById("viewer").src =
         "./" + folderName + "/index.html";
+
+      document.getElementById("stage").classList.toggle("is-zoom-90", folderName === "13_dicememo");
 
       toggleMenu(false);
 
