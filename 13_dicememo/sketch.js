@@ -94,6 +94,7 @@ async function setup() {
     canvas.elt.style.cursor = !throwState && isOverDice(event) ? 'pointer' : '';
   });
   if (IS_TOUCH) adaptCopyForTouch();
+  cycleInlineFaces();
   describe('Würfel 시작화면. 중앙 주사위와 W, ü, r, f, e, l 이미지 버튼.');
 }
 
@@ -113,9 +114,19 @@ function isOverDice(event) {
 }
 
 // 키보드가 없는 기기에서는 스페이스바·Enter 안내를 탭 안내로 바꿉니다.
+// 안내 문구 속 작은 면 아이콘이 W·ü·r·f·e·l 여섯 면을 차례로 보여줍니다.
+function cycleInlineFaces() {
+  let face = 1;
+  setInterval(() => {
+    face = face % 6 + 1;
+    document.querySelectorAll('.inline-face img').forEach(img => { img.src = `assets/face-${face}.png`; });
+  }, 1200);
+}
+
 function adaptCopyForTouch() {
-  document.querySelector('.instruction .ko').innerHTML = '버튼을 눌러 영감을 기록할 수는 있지만,<br>가능한 <u>주사위를 탭</u>해서 굴려보세요';
-  document.querySelector('.instruction .de').innerHTML = 'Du kannst deine Inspirationen auch per Tipp auf den Button festhalten.<br>Versuch aber, möglichst <u>auf den Würfel zu tippen</u>, um zu würfeln!';
+  const icon = '<span class="inline-face" aria-hidden="true"><img src="assets/face-1.png" alt=""></span>';
+  document.querySelector('.instruction .ko').innerHTML = `${icon} 버튼을 눌러 영감을 기록할 수는 있지만,<br>가능한 <u>주사위를 탭</u>해서 굴려보세요`;
+  document.querySelector('.instruction .de').innerHTML = `Du kannst deine Inspirationen auch per Tipp auf den ${icon} Button festhalten.<br>Versuch aber, möglichst <u>auf den Würfel zu tippen</u>, um zu würfeln!`;
   document.querySelectorAll('.save-hint').forEach(hint => { hint.textContent = '탭해서 저장하기'; });
 }
 

@@ -26,6 +26,9 @@
       margin-top: 12px; font-family: "Apple SD Gothic Neo", sans-serif;
       font-size: 12pt; line-height: 14.4pt; font-weight: 400;
     }
+    /* 안내 문구 속 작은 주사위 면: 화면 구석의 면 버튼과 같은 모양이라 그것이 버튼임을 알려줍니다. 여섯 면이 차례로 바뀝니다. */
+    .inline-face { display: inline-block; width: 1.35em; height: 1.35em; vertical-align: -.33em; border-radius: 50%; }
+    .inline-face img { display: block; width: 100%; height: 100%; filter: grayscale(1) invert(1); }
     .face-buttons { position: fixed; z-index: 3; display: grid; gap: 3px; mix-blend-mode: screen; }
     .face-buttons.left { top: 5.8%; left: 3.4%; grid-template-columns: var(--button-size); }
     .face-buttons.right {
@@ -96,7 +99,7 @@
   <script src="seed-notes.js?v=3"></script>
   <script src="writing.js?v=dice-4"></script>
   <script src="../p5.min.js"></script>
-  <script src="sketch.js?v=dice-3"></script>
+  <script src="sketch.js?v=dice-4"></script>
   <script src="notes.js?v=notes-drag-3"></script>
   <link rel="stylesheet" href="remember.css?v=5">
   <script src="remember.js?v=2"></script>
@@ -117,8 +120,8 @@
   <div id="noteBoard"></div>
   <textarea id="wMemo" class="memo" hidden aria-label="W 메모지"></textarea>
   <section class="instruction" aria-label="사용 안내">
-    <p class="ko" lang="ko">버튼을 눌러 영감을 기록할 수는 있지만,<br>가능한 <u>스페이스바</u>를 눌러 주사위를 굴려보세요</p>
-    <p class="de" lang="de">Du kannst deine Inspirationen auch per Klick auf den Button festhalten.<br>Versuch aber, möglichst <u>die Leertaste</u> zu drücken, um zu würfeln!</p>
+    <p class="ko" lang="ko"><span class="inline-face" aria-hidden="true"><img src="assets/face-1.png" alt=""></span> 버튼을 눌러 영감을 기록할 수는 있지만,<br>가능한 <u>스페이스바</u>를 눌러 주사위를 굴려보세요</p>
+    <p class="de" lang="de">Du kannst deine Inspirationen auch per Klick auf den <span class="inline-face" aria-hidden="true"><img src="assets/face-1.png" alt=""></span> Button festhalten.<br>Versuch aber, möglichst <u>die Leertaste</u> zu drücken, um zu würfeln!</p>
   </section>
   <nav class="face-buttons left" aria-label="W ü r">
     <button class="face-button" data-face="1" type="button" aria-label="W"><img src="assets/face-1.png" alt=""></button>
