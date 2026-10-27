@@ -1,5 +1,7 @@
 let findSelected = null, findAnimation = null;
 const findDrafts = new Map();
+// 터치 기기에서는 안내 문구의 '클릭'을 '탭'으로 바꿉니다.
+const FIND_TAP = IS_TOUCH ? '탭' : '클릭';
 function openFind() {
   openWriting('find');
   document.body.classList.add('is-find');
@@ -28,7 +30,7 @@ function renderFindArchive() {
     inner.append(date,content); card.append(inner);
     card.addEventListener('click',()=>selectFindNote(note,card)); grid.append(card);
   });
-  document.getElementById('findStatus').textContent = notes.length ? '카드를 클릭해 내용을 확인하고, 한 번 더 클릭해 이어 써보세요.' : '';
+  document.getElementById('findStatus').textContent = notes.length ? `카드를 ${FIND_TAP}해 내용을 확인하고, 한 번 더 ${FIND_TAP}해 이어 써보세요.` : '';
 }
 async function selectFindNote(note,card) {
   if (findAnimation || writingSaving) return;
@@ -36,8 +38,8 @@ async function selectFindNote(note,card) {
     card.classList.add('is-revealed');
     card.querySelector('.find-card-content').removeAttribute('aria-hidden');
     card.querySelector('.find-card-date').setAttribute('aria-hidden','true');
-    card.setAttribute('aria-label',`${overlayDate(note.date)} — 다시 클릭해서 이어쓰기`);
-    document.getElementById('findStatus').textContent = '내용을 확인한 카드를 한 번 더 클릭하면 오른쪽에서 이어 쓸 수 있어요.';
+    card.setAttribute('aria-label',`${overlayDate(note.date)} — 다시 ${FIND_TAP}해서 이어쓰기`);
+    document.getElementById('findStatus').textContent = `내용을 확인한 카드를 한 번 더 ${FIND_TAP}하면 오른쪽에서 이어 쓸 수 있어요.`;
     return;
   }
   if (findSelected) findDrafts.set(findSelected,writingElements.input.value);
@@ -71,7 +73,7 @@ async function selectFindNote(note,card) {
   writingElements.input.focus({preventScroll:true});
   writingElements.input.setSelectionRange(writingElements.input.value.length,writingElements.input.value.length);
   writingElements.input.scrollTop = writingElements.input.scrollHeight;
-  document.getElementById('findStatus').textContent = '선택한 기록에 이어서 작성하세요. Enter로 새 기록을 저장합니다.';
+  document.getElementById('findStatus').textContent = `선택한 기록에 이어서 작성하세요. ${IS_TOUCH ? '저장하기를 탭하면' : 'Enter로'} 새 기록을 저장합니다.`;
 }
 function resetFindAfterSave() {
   findDrafts.delete(findSelected); findSelected = null;

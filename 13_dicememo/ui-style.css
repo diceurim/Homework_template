@@ -84,9 +84,10 @@
 /* 카드에서 작성란으로 옮겨 가는 종이: 위치·크기·여백·글자 크기를 JS에서 함께 옮깁니다. */
 .find-flyer.find-flyer-front { position: fixed; inset: auto; z-index: 20; transform: none; box-sizing: border-box; }
 
-/* 화면 이름표: 왼쪽 위 구석, 닫기 버튼과 같은 높이에 작게 표시합니다. 시작 화면에서는 보이지 않습니다. */
+/* 화면 이름표: 왼쪽 위 구석, 닫기 버튼과 같은 높이에 작게 표시합니다. 시작 화면에서는 보이지 않습니다.
+   과제 모음 페이지의 ☰ 목록 탭(폭 28px)과 겹치지 않도록 왼쪽을 44px 이상 띄웁니다. */
 #viewLabel {
- display: none; position: fixed; z-index: 30; top: 3%; left: 2%; height: clamp(20px, 2vw, 39px); align-items: center; gap: 10px;
+ display: none; position: fixed; z-index: 30; top: 3%; left: max(2%, 44px); height: clamp(20px, 2vw, 39px); align-items: center; gap: 10px;
  pointer-events: none; color: #8a8a8a; font: 12px/1 var(--memo-sans); letter-spacing: .04em;
 }
 body.is-writing #viewLabel { display: flex; }
