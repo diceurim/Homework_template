@@ -37,7 +37,9 @@ function renderMemories() {
     const date = document.createElement('h2'); date.className = 'writing-serif'; date.textContent = overlayDate(note.date);
     const body = document.createElement('div'); body.className = 'memory-body'; body.textContent = note.text;
     const footer = document.createElement('span'); footer.className = 'memory-number'; footer.textContent = `${String((rememberIndex + depth) % count + 1).padStart(2,'0')} / ${String(count).padStart(2,'0')}`;
-    card.append(date, body, footer); deck.append(card);
+    const foot = document.createElement('div'); foot.className = 'memory-foot'; foot.append(footer);
+    if (!depth) foot.append(memoryDeleteButton(note));
+    card.append(date, body, foot); deck.append(card);
     if (!depth) attachMemorySwipe(card);
   }
   if (!count) {
@@ -49,6 +51,33 @@ function renderMemories() {
   document.getElementById('rememberStatus').textContent = count ? `${rememberIndex + 1} / ${count}` : '0 / 0';
   document.querySelectorAll('.memory-nav button').forEach(button => button.disabled = count < 2);
   document.getElementById('rememberHint').textContent = count > 1 ? '좌우로 밀어 기록을 넘겨보세요' : count === 1 ? '첫 번째 기록입니다' : '기록을 남기고 다시 찾아와 주세요';
+}
+// 삭제: 한 번 누르면 확인 문구로 바뀌고, 3초 안에 한 번 더 누르면 지웁니다.
+function memoryDeleteButton(note) {
+  const button = document.createElement('button');
+  button.type = 'button'; button.className = 'memory-delete'; button.textContent = '삭제';
+  let timer = null;
+  button.addEventListener('click', () => {
+    if (rememberMotion) return;
+    if (!button.classList.contains('is-confirm')) {
+      button.classList.add('is-confirm'); button.textContent = '한 번 더 누르면 삭제';
+      timer = setTimeout(() => { button.classList.remove('is-confirm'); button.textContent = '삭제'; }, 3000);
+      return;
+    }
+    clearTimeout(timer);
+    deleteMemory(note);
+  });
+  return button;
+}
+function deleteMemory(note) {
+  const index = writingNotes.indexOf(note);
+  if (index >= 0) writingNotes.splice(index, 1);
+  saveWritingNotes();
+  rememberOrder = rememberOrder.filter(item => item !== note);
+  if (rememberIndex >= rememberOrder.length) rememberIndex = 0;
+  renderMemories();
+  document.getElementById('rememberHint').textContent = '기록을 삭제했어요.';
+  document.getElementById('rememberDeck').focus({preventScroll:true});
 }
 async function moveMemory(direction) {
   if (rememberOrder.length < 2 || rememberMotion) return;

@@ -26,3 +26,9 @@ body.is-remember { background: #121212; }
 .is-remember .memory-nav button { color: #bcbcbc; }
 @media (hover: hover) { .is-remember .memory-nav button:hover:not(:disabled) { background: #fff; color: #121212; } }
 .is-remember #rememberHint { color: #bcbcbc; }
+
+/* 카드 아래: 번호 + 삭제 버튼 */
+.memory-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.memory-delete { padding: 6px 10px; border: 1px solid #bcbcbc; border-radius: 6px; background: transparent; color: #6d6d6d; font: 12px 'Apple SD Gothic Neo', sans-serif; cursor: pointer; touch-action: manipulation; transition: color .15s, background .15s, border-color .15s; }
+@media (hover: hover) { .memory-delete:hover { border-color: #121212; color: #121212; } }
+.memory-delete.is-confirm { border-color: #121212; background: #121212; color: #fff; }

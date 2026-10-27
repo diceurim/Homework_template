@@ -3,9 +3,9 @@ const WRITING_STORAGE_KEY = 'wuerfel-notes-v1';
 const writingNotes = loadWritingNotes();
 function loadWritingNotes() {
   try {
-    let saved = JSON.parse(localStorage.getItem(WRITING_STORAGE_KEY) || '[]');
-    // 저장된 기록이 없으면 발표용 기본 메모(seed-notes.js)로 시작합니다.
-    if (Array.isArray(saved) && !saved.length && typeof SEED_NOTES !== 'undefined') saved = SEED_NOTES.map(note => ({...note}));
+    const stored = localStorage.getItem(WRITING_STORAGE_KEY);
+    // 처음 방문해 저장한 적이 없으면 발표용 기본 메모(seed-notes.js)로 시작합니다. 모두 삭제한 뒤에는 빈 상태를 유지합니다.
+    let saved = stored === null && typeof SEED_NOTES !== 'undefined' ? SEED_NOTES.map(note => ({...note})) : JSON.parse(stored || '[]');
     // 형식이 맞지 않는 항목은 건너뜁니다.
     return Array.isArray(saved) ? saved.filter(note => note && typeof note.text === 'string' && typeof note.date === 'string') : [];
   } catch (_) { return []; }
