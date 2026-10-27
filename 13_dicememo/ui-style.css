@@ -83,3 +83,23 @@
 
 /* 카드에서 작성란으로 옮겨 가는 종이: 위치·크기·여백·글자 크기를 JS에서 함께 옮깁니다. */
 .find-flyer.find-flyer-front { position: fixed; inset: auto; z-index: 20; transform: none; box-sizing: border-box; }
+
+/* 화면 이름표: 왼쪽 위 구석, 닫기 버튼과 같은 높이에 작게 표시합니다. 시작 화면에서는 보이지 않습니다. */
+#viewLabel {
+ display: none; position: fixed; z-index: 30; top: 3%; left: 2%; height: clamp(20px, 2vw, 39px); align-items: center; gap: 10px;
+ pointer-events: none; color: #8a8a8a; font: 12px/1 var(--memo-sans); letter-spacing: .04em;
+}
+body.is-writing #viewLabel { display: flex; }
+#viewLabel::before { display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 4px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 4px; color: #fff; font-weight: 700; }
+body.is-writing #viewLabel::before { content: 'W'; }
+body.is-writing #viewLabel::after { content: 'Write · 기록하기'; }
+body.is-overlay #viewLabel::before { content: 'Ü'; }
+body.is-overlay #viewLabel::after { content: 'Überlagern · 중첩하기'; }
+body.is-find #viewLabel::before { content: 'F'; }
+body.is-find #viewLabel::after { content: 'Find · 발견하기'; }
+body.is-remember #viewLabel::before { content: 'R'; }
+body.is-remember #viewLabel::after { content: 'Remember · 기억하기'; }
+body.is-experiment #viewLabel::before { content: 'E'; }
+body.is-experiment #viewLabel::after { content: 'Experiment · 실험하기'; }
+body.is-lolling #viewLabel::before { content: 'L'; }
+body.is-lolling #viewLabel::after { content: 'Lolling · 유희하기'; }
