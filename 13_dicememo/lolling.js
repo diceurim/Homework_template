@@ -33,6 +33,85 @@ function openLolling() {
     item.w=item.el.offsetWidth;item.h=item.el.offsetHeight;
     if(item.body) Body.scale(item.body,item.w/beforeW,item.h/beforeH);
   }
+  // 잡기·끌기·놓기: 손가락(마우스)과 처음 보여주는 손끝 시범이 같은 동작을 씁니다.
+  function grab(item,x,y,id){
+    const restingSize=item.size; item.breakable=false;
+    item.size=Math.min(item.size*1.3,30);measure(item);clamp(item);
+    world.drag={item,restingSize,id,lastX:x,lastY:y,time:performance.now(),vx:0,vy:0,dx:item.body.position.x-x,dy:item.body.position.y-y};
+    Body.setStatic(item.body,true);item.el.classList.add('held');
+    showTouchRing(x,y);
+  }
+  function dragTo(x,y,id){
+    const d=world.drag;if(!d||d.id!==id)return;
+    const now=performance.now(),dt=Math.max(8,now-d.time);
+    d.vx=(x-d.lastX)/dt*16.67;d.vy=(y-d.lastY)/dt*16.67;
+    d.lastX=x;d.lastY=y;d.time=now;
+    Body.setPosition(d.item.body,{x:x+d.dx,y:y+d.dy});clamp(d.item);
+    moveTouchRing(x,y);
+  }
+  function drop(id,cancelled=false){
+    const d=world.drag;if(!d||d.id!==id)return;const item=d.item;
+    world.drag=null;Body.setStatic(item.body,false);item.size=d.restingSize;measure(item);clamp(item);Body.setInertia(item.body,Infinity);item.el.classList.remove('held');
+    const fresh=performance.now()-d.time<150 && !cancelled;
+    Body.setVelocity(item.body,{x:fresh?Math.max(-14,Math.min(14,d.vx)):0,y:fresh?Math.max(-14,Math.min(14,d.vy)):0});
+    item.thrown=fresh&&Math.hypot(d.vx,d.vy)>1?performance.now()+1800:0;
+    item.breakable=item.parts.length>1 && item.thrown>0;
+    hideTouchRing();
+  }
+  // 누르는 동안 손가락 아래에 원이 생겨 '잡았다'는 것을 보여줍니다.
+  function showTouchRing(x,y){
+    hideTouchRing(true);
+    const ring=document.createElement('div');ring.className='lolling-ring';
+    document.getElementById('lollingField').append(ring);world.ring=ring;moveTouchRing(x,y);
+  }
+  function moveTouchRing(x,y){if(world.ring)world.ring.style.transform=`translate(${x}px,${y}px)`;}
+  function hideTouchRing(now=false){
+    const ring=world.ring;if(!ring)return;world.ring=null;
+    if(now){ring.remove();return;}
+    ring.classList.add('is-out');setTimeout(()=>ring.remove(),250);
+  }
+  // 손끝 시범: 들어오면 한 번, 반투명 손끝이 메모를 눌러 잡고 다른 메모 쪽으로 던집니다. 화면을 만지면 바로 멈춥니다.
+  function playDemo(){
+    if(world.items.length<2||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    const center={x:innerWidth/2,y:innerHeight/2},dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+    const a=[...world.items].sort((p,q)=>dist(p.body.position,center)-dist(q.body.position,center))[0];
+    const b=world.items.filter(item=>item!==a).sort((p,q)=>dist(p.body.position,a.body.position)-dist(q.body.position,a.body.position))[0];
+    const finger=document.createElement('div');finger.className='lolling-finger';
+    document.getElementById('lollingField').append(finger);
+    const demo=world.demo={finger,start:performance.now(),grabbed:false,done:false};
+    const ease=t=>t<.5?2*t*t:1-(-2*t+2)**2/2;
+    let from=null,dir=null,grabAt=null;
+    function stop(){
+      if(demo.done)return;demo.done=true;world.demo=null;
+      if(world.drag?.id==='demo')drop('demo',true);
+      finger.classList.add('is-out');setTimeout(()=>finger.remove(),300);
+      document.removeEventListener('pointerdown',stop,true);
+    }
+    demo.stop=stop;
+    document.addEventListener('pointerdown',stop,true);
+    function step(now){
+      if(demo.done||lollingWorld!==world||!world.items.includes(a))return stop();
+      const t=now-demo.start;
+      if(t<700){ // 손끝이 메모 위로 다가옵니다.
+        const target=a.body.position;from=from||{x:target.x+140,y:target.y+120};
+        const k=ease(t/700);place(from.x+(target.x-from.x)*k,from.y+(target.y-from.y)*k,k);
+      } else if(t<950){ // 꾹 눌러 잡습니다.
+        if(!demo.grabbed){demo.grabbed=true;grabAt={...a.body.position};grab(a,grabAt.x,grabAt.y,'demo');finger.classList.add('is-press');
+          const bp=b?b.body.position:center;const len=Math.max(1,dist(bp,grabAt));dir={x:(bp.x-grabAt.x)/len,y:(bp.y-grabAt.y)/len};}
+        place(grabAt.x,grabAt.y,1);
+      } else if(t<1450){ // 던질 방향 반대로 살짝 당깁니다.
+        const k=ease((t-950)/500);const x=grabAt.x-dir.x*70*k,y=grabAt.y-dir.y*70*k;place(x,y,1);dragTo(x,y,'demo');
+      } else if(t<1570){ // 휙 던집니다.
+        const k=(t-1450)/120;const x=grabAt.x-dir.x*70+dir.x*200*k,y=grabAt.y-dir.y*70+dir.y*200*k;place(x,y,1);dragTo(x,y,'demo');
+      } else {
+        if(world.drag?.id==='demo'){drop('demo');finger.classList.remove('is-press');}
+        if(t>1900)return stop();
+      }
+      requestAnimationFrame(step);
+    }
+    function place(x,y,opacity){finger.style.transform=`translate(${x}px,${y}px)`;finger.style.opacity=opacity;}
+    requestAnimationFrame(step);
+  }
   function add(text,x,y,velocity={x:1,y:1},parts=null,size=16) {
     const el=document.createElement('div');el.className='lolling-text';el.textContent=text;el.tabIndex=0;
     document.getElementById('lollingField').append(el);
@@ -41,26 +120,10 @@ function openLolling() {
     Composite.add(engine.world,item.body);world.items.push(item);clamp(item);Body.setVelocity(item.body,velocity);
     el.addEventListener('pointerdown',e=>{
       if(e.button!==0||world.drag)return;e.preventDefault();el.setPointerCapture(e.pointerId);
-      const restingSize=item.size; item.breakable=false;
-      item.size=Math.min(item.size*1.3,30);measure(item);clamp(item);
-      world.drag={item,restingSize,id:e.pointerId,lastX:e.clientX,lastY:e.clientY,time:performance.now(),vx:0,vy:0,dx:item.body.position.x-e.clientX,dy:item.body.position.y-e.clientY};
-      Body.setStatic(item.body,true);el.classList.add('held');
+      grab(item,e.clientX,e.clientY,e.pointerId);
     });
-    el.addEventListener('pointermove',e=>{
-      const d=world.drag;if(!d||d.item!==item||d.id!==e.pointerId)return;
-      const now=performance.now(),dt=Math.max(8,now-d.time);
-      d.vx=(e.clientX-d.lastX)/dt*16.67;d.vy=(e.clientY-d.lastY)/dt*16.67;
-      d.lastX=e.clientX;d.lastY=e.clientY;d.time=now;
-      Body.setPosition(item.body,{x:e.clientX+d.dx,y:e.clientY+d.dy});clamp(item);
-    });
-    function release(e){const d=world.drag;if(!d||d.item!==item||d.id!==e.pointerId)return;
-      world.drag=null;Body.setStatic(item.body,false);item.size=d.restingSize;measure(item);clamp(item);Body.setInertia(item.body,Infinity);el.classList.remove('held');
-      const fresh=performance.now()-d.time<150 && e.type!=='pointercancel';
-      Body.setVelocity(item.body,{x:fresh?Math.max(-14,Math.min(14,d.vx)):0,y:fresh?Math.max(-14,Math.min(14,d.vy)):0});
-      item.thrown=fresh&&Math.hypot(d.vx,d.vy)>1?performance.now()+1800:0;
-      item.breakable=item.parts.length>1 && item.thrown>0;
-    }
-    el.addEventListener('pointerup',release);el.addEventListener('pointercancel',release);
+    el.addEventListener('pointermove',e=>dragTo(e.clientX,e.clientY,e.pointerId));
+    el.addEventListener('pointerup',e=>drop(e.pointerId));el.addEventListener('pointercancel',e=>drop(e.pointerId,true));
     el.addEventListener('pointerenter',()=>{world.hover=item;});
     el.addEventListener('pointerleave',()=>{if(world.hover===item)world.hover=null;});
     return item;
@@ -68,6 +131,7 @@ function openLolling() {
   walls();
   writingNotes.forEach((note,i)=>add(note.text,100+Math.random()*Math.max(1,innerWidth-200),180+Math.random()*Math.max(1,innerHeight-300),{x:(Math.random()-.5)*2,y:(Math.random()-.5)*2}));
   document.getElementById('lollingEmpty').hidden=writingNotes.length>0;
+  world.demoTimer=setTimeout(playDemo,1000);
   Events.on(engine,'collisionStart collisionActive',event=>{
     for(const pair of event.pairs){const a=pair.bodyA.memo,b=pair.bodyB.memo;
       for(const [item,other] of [[a,pair.bodyB],[b,pair.bodyA]]) {
@@ -118,7 +182,7 @@ function openLolling() {
   }
   window.addEventListener('resize',world.resize);world.frame=requestAnimationFrame(tick);
 }
-function closeLolling(){const w=lollingWorld;if(w){cancelAnimationFrame(w.frame);window.removeEventListener('resize',w.resize);Matter.Composite.clear(w.engine.world,false);Matter.Engine.clear(w.engine);}lollingWorld=null;
+function closeLolling(){const w=lollingWorld;if(w){clearTimeout(w.demoTimer);w.demo?.stop();cancelAnimationFrame(w.frame);window.removeEventListener('resize',w.resize);Matter.Composite.clear(w.engine.world,false);Matter.Engine.clear(w.engine);}lollingWorld=null;
  document.getElementById('lollingField').replaceChildren();document.getElementById('lollingView').hidden=true;document.body.classList.remove('is-lolling','is-writing');writingOpen=false;document.querySelector('.instruction').hidden=false;document.querySelector('.face-button[data-face="6"]').focus();
 }
 document.addEventListener('DOMContentLoaded',()=>document.getElementById('lollingClose').addEventListener('click',closeLolling));

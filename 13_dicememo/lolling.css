@@ -11,3 +11,21 @@
 #lollingField.has-focus .lolling-text:not(.is-focus) { opacity:.3; }
 #lollingEmpty { position:absolute; top:45%; left:25%; width:50%; text-align:center; }
 #lollingClose { z-index:10; }
+
+/* 손끝 시범과 누르는 원: 글 대신 동작으로 '잡아서 던지기'를 알려줍니다. */
+.lolling-finger, .lolling-ring { position: absolute; left: 0; top: 0; z-index: 4; pointer-events: none; border-radius: 50%; }
+.lolling-finger {
+ width: 44px; height: 44px; margin: -22px 0 0 -22px; box-sizing: border-box;
+ background: #ffffff40; border: 2px solid #ffffffb3; box-shadow: 0 0 24px #ffffff40;
+ transition: width .15s, height .15s, margin .15s, opacity .3s;
+}
+.lolling-finger.is-press { width: 34px; height: 34px; margin: -17px 0 0 -17px; background: #ffffff66; }
+.lolling-finger.is-out { opacity: 0 !important; }
+.lolling-ring {
+ width: 56px; height: 56px; margin: -28px 0 0 -28px; box-sizing: border-box; border: 2px solid #ffffffb3;
+ animation: lolling-ring-in .2s cubic-bezier(.2,.7,.2,1);
+}
+.lolling-ring::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid #fff; animation: lolling-ring-wave .6s ease-out forwards; }
+.lolling-ring.is-out { opacity: 0; transition: opacity .25s; }
+@keyframes lolling-ring-in { from { opacity: 0; scale: .5; } }
+@keyframes lolling-ring-wave { to { scale: 1.8; opacity: 0; } }
