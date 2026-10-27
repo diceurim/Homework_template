@@ -64,10 +64,22 @@
  border: 1.5px solid currentColor; border-radius: 50%;
 }
 .find-card[aria-pressed=true] .find-card-date::before, .find-card.is-revealed .find-card-date::before { background: radial-gradient(circle, currentColor 0 2.5px, transparent 3px); }
-.find-card[aria-pressed=true] { outline: none; }
-.find-card[aria-pressed=true] .find-card-content { box-shadow: inset 0 0 0 2px #121212; }
+/* 이어 쓰는 카드: 흰 테두리 + 오른쪽 아래 체크 배지, 나머지 카드는 한 단계 흐리게 둡니다. */
+.find-card[aria-pressed=true] { outline: 2px solid #fff; outline-offset: 1px; }
+.find-card[aria-pressed=true]::after {
+ content: '✓'; position: absolute; z-index: 2; right: 8px; bottom: 8px; width: 20px; height: 20px; display: grid; place-items: center;
+ border-radius: 50%; background: #121212; color: #fff; font: 700 11px/1 var(--memo-sans);
+}
+#findArchive:has(.find-card[aria-pressed=true]) .find-card:not([aria-pressed=true]) { opacity: .5; transition: opacity .2s; }
+@media (hover: hover) { #findArchive .find-card:hover { opacity: 1 !important; } }
 .find-flyer-front, .find-flyer-back { border-radius: 6px; }
 .find-flyer-back { background: #2a2a2a; color: #fff; }
 
 /* E 실험하기: 작성란 모서리와 테두리를 다른 패널과 맞춥니다. */
 .experiment-paper { border-radius: 8px; box-shadow: inset 0 0 0 1px #ffffff1f; }
+
+/* F 발견하기 카드 목록: 스크롤바 막대는 그대로 두고, 흰 바탕만 반투명으로 바꿉니다. */
+.is-find #findArchive { scrollbar-color: #c1c1c1 #ffffff1f; }
+
+/* 카드에서 작성란으로 옮겨 가는 종이: 위치·크기·여백·글자 크기를 JS에서 함께 옮깁니다. */
+.find-flyer.find-flyer-front { position: fixed; inset: auto; z-index: 20; transform: none; box-sizing: border-box; }

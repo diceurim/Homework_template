@@ -41,16 +41,25 @@ async function selectFindNote(note,card) {
     return;
   }
   if (findSelected) findDrafts.set(findSelected,writingElements.input.value);
+  // 고른 카드를 바로 표시해, 날아가는 동안에도 어느 카드인지 보이게 합니다.
+  document.querySelectorAll('.find-card').forEach(item=>item.setAttribute('aria-pressed',String(item===card)));
+  // 카드를 늘리는 대신 크기·여백·글자 크기를 함께 옮겨, 글자가 찌그러지지 않고 작성란 글자 그대로 도착합니다.
   const start = card.getBoundingClientRect(), end = writingElements.paper.getBoundingClientRect();
-  const flyer = document.createElement('div'); flyer.className = 'find-flyer'; flyer.setAttribute('aria-hidden','true');
-  const front = document.createElement('div'); front.className = 'find-flyer-front'; front.textContent = note.text;
-  const back = document.createElement('div'); back.className = 'find-flyer-back'; back.textContent = overlayDate(note.date);
-  flyer.append(front,back); Object.assign(flyer.style,{left:`${start.left}px`,top:`${start.top}px`,width:`${start.width}px`,height:`${start.height}px`}); document.body.append(flyer);
-  writingElements.input.disabled = true;
+  const startStyle = getComputedStyle(card.querySelector('.find-card-content'));
+  const input = writingElements.input, inputBox = input.getBoundingClientRect(), inputStyle = getComputedStyle(input);
+  const endPad = [
+    inputBox.top - end.top + parseFloat(inputStyle.borderTopWidth) + parseFloat(inputStyle.paddingTop),
+    end.right - inputBox.right + parseFloat(inputStyle.paddingRight),
+    end.bottom - inputBox.bottom,
+    inputBox.left - end.left + parseFloat(inputStyle.paddingLeft)
+  ].map(value=>`${Math.max(0,value)}px`).join(' ');
+  const flyer = document.createElement('div'); flyer.className = 'find-flyer find-flyer-front'; flyer.setAttribute('aria-hidden','true');
+  flyer.textContent = note.text; document.body.append(flyer);
+  input.disabled = true;
   const animation = flyer.animate([
-    {transform:'perspective(1000px) rotateY(180deg)'},
-    {transform:`translate(${end.left-start.left}px,${end.top-start.top}px) perspective(1000px) rotateY(180deg) scale(${end.width/start.width},${end.height/start.height})`}
-  ],{duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:550,easing:'cubic-bezier(.25,.1,.25,1)',fill:'forwards'});
+    {left:`${start.left}px`,top:`${start.top}px`,width:`${start.width}px`,height:`${start.height}px`,padding:startStyle.padding,fontSize:startStyle.fontSize,lineHeight:startStyle.lineHeight,borderRadius:startStyle.borderTopLeftRadius},
+    {left:`${end.left}px`,top:`${end.top}px`,width:`${end.width}px`,height:`${end.height}px`,padding:endPad,fontSize:inputStyle.fontSize,lineHeight:inputStyle.lineHeight,borderRadius:getComputedStyle(writingElements.paper).borderRadius}
+  ],{duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:340,easing:'cubic-bezier(.2,.7,.2,1)',fill:'forwards'});
   findAnimation = {animation,flyer};
   try {await animation.finished;} catch (_) {return;}
   flyer.remove(); findAnimation = null;
@@ -59,7 +68,6 @@ async function selectFindNote(note,card) {
   writingElements.input.placeholder = '';
   writingElements.input.value = findDrafts.get(note) ?? `${note.text}\n\n`;
   setWritingDate(todayForWriting());
-  document.querySelectorAll('.find-card').forEach(item=>item.setAttribute('aria-pressed',String(item===card)));
   writingElements.input.focus({preventScroll:true});
   writingElements.input.setSelectionRange(writingElements.input.value.length,writingElements.input.value.length);
   writingElements.input.scrollTop = writingElements.input.scrollHeight;
