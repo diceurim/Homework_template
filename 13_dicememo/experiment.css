@@ -81,3 +81,18 @@
  .experiment-lower { margin-right: 0; }
  #experimentClose { position: fixed; }
 }
+
+/* 크게 보기: 룰렛 칸을 누르면 룰렛 묶음 자리에 메모 전체를 펼칩니다. 다시 누르면 접힙니다. */
+#experimentReels { position: relative; }
+.reel-window { cursor: zoom-in; }
+.reel-window:focus-visible { outline: 1px solid #fff; outline-offset: 2px; }
+.reel-detail {
+ position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; gap: 14px; padding: 22px 26px;
+ box-sizing: border-box; border: 2px solid #fff; border-radius: 8px; background: #121212; color: #fff; cursor: zoom-out;
+ animation: reel-detail-in .18s cubic-bezier(.2,.7,.2,1);
+}
+.reel-detail:focus-visible { outline: 1px solid #fff; outline-offset: 3px; }
+.reel-detail-date { align-self: flex-start; padding: 4px 10px; border: 2px solid currentColor; font: 600 12pt var(--memo-sans); letter-spacing: .02em; }
+.reel-detail-text { flex: 1; min-height: 0; margin: 0; overflow-y: auto; overscroll-behavior: contain; white-space: pre-wrap; overflow-wrap: anywhere; font: 600 12pt/1.6 var(--memo-sans); scrollbar-width: thin; scrollbar-color: #888 transparent; }
+@keyframes reel-detail-in { from { opacity: 0; transform: scale(.97); } }
+@media (prefers-reduced-motion: reduce) { .reel-detail { animation: none; } }

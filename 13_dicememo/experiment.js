@@ -45,13 +45,33 @@ function renderExperimentReels() {
     const view = document.createElement('div'); view.className = 'reel-window';
     const strip = document.createElement('div'); strip.className = 'reel-strip';
     view.append(strip); row.append(pin, view); container.append(row);
+    view.tabIndex = 0; view.setAttribute('role', 'button'); view.setAttribute('aria-label', `${i + 1}번째 기록 크게 보기`);
     const items = randomNotes(5);
     const reel = {items, note: items[2], kept: false, row, view, strip, pin, animation: null};
     pin.addEventListener('click', () => toggleReelKeep(reel));
+    view.addEventListener('click', () => openReelDetail(reel));
+    view.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openReelDetail(reel); } });
     setReelStrip(reel, items);
     experimentReels.push(reel);
   }
 }
+
+// 룰렛 칸이 좁아 다 못 읽는 메모는 눌러서 룰렛 묶음 크기로 펼쳐 보고, 다시 누르면 접습니다.
+function openReelDetail(reel) {
+  if (experimentSpinning || !reel.note) return;
+  closeReelDetail();
+  const detail = document.createElement('div'); detail.className = 'reel-detail'; detail.tabIndex = 0;
+  detail.setAttribute('role', 'button'); detail.setAttribute('aria-label', '다시 눌러 룰렛으로 돌아가기');
+  const date = document.createElement('span'); date.className = 'reel-detail-date'; date.textContent = overlayDate(reel.note.date);
+  const text = document.createElement('p'); text.className = 'reel-detail-text'; text.textContent = reel.note.text;
+  detail.append(date, text);
+  const close = () => { closeReelDetail(); reel.view.focus({preventScroll: true}); };
+  detail.addEventListener('click', close);
+  detail.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); close(); } });
+  document.getElementById('experimentReels').append(detail);
+  detail.focus({preventScroll: true});
+}
+function closeReelDetail() { document.querySelector('.reel-detail')?.remove(); }
 
 function setReelStrip(reel, notes) {
   reel.strip.replaceChildren(...notes.map((note, index) => {
@@ -96,6 +116,7 @@ function drawExperimentNotes(count) {
 async function spinExperiment() {
   const targets = experimentReels.filter(reel => !reel.kept);
   if (experimentSpinning || !targets.length) return;
+  closeReelDetail();
   experimentSpinning = true;
   const run = experimentRun;
   experimentReels.forEach(reel => reel.pin.disabled = true);
@@ -184,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.addEventListener('keydown', event => {
     if (!writingOpen || writingMode !== 'experiment' || event.code !== 'Space') return;
-    if (['TEXTAREA', 'INPUT', 'BUTTON'].includes(event.target.tagName)) return;
+    if (['TEXTAREA', 'INPUT', 'BUTTON'].includes(event.target.tagName) || event.target.getAttribute('role') === 'button') return;
     event.preventDefault();
     if (!event.repeat) pullLever();
   });
