@@ -66,7 +66,7 @@ function setupWriting() {
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && writingOpen && !event.isComposing) {
       event.preventDefault();
-      if (writingMode === 'lolling') closeLolling(); else if (writingMode === 'experiment') closeExperiment(); else if (writingMode === 'remember') closeRemember(); else closeWriting();
+      closeCurrentView();
     }
   });
 }

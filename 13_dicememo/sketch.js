@@ -21,6 +21,8 @@ const FLOOR_Y = 150;
 const THROW_DURATION = 2600;
 let assetsReady = false;
 let writingViewProgress = 0;
+// 기록 화면에서 왼쪽 아래로 옮겨 그린 주사위가 시작화면 위치에서 얼마나 이동했는지(px).
+let diceScreenShift = [0, 0];
 let faceShader;
 let textures = [];
 let loadedFaces = [];
@@ -82,12 +84,24 @@ async function setup() {
   setupFaceButtons();
   setupWriting();
   // 주사위를 클릭하거나 탭하면 스페이스바처럼 무작위로 굴립니다.
-  canvas.elt.addEventListener('click', event => { if (isOverDice(event)) rollDice(); });
+  // 기록 화면 안에서 누르면 그 화면을 닫고 시작화면으로 돌아가면서 바로 굴립니다.
+  canvas.elt.addEventListener('click', event => {
+    if (!isOverDice(event) || throwState) return;
+    if (writingOpen) closeCurrentView();
+    rollDice();
+  });
   canvas.elt.addEventListener('pointermove', event => {
-    canvas.elt.style.cursor = !writingOpen && !throwState && isOverDice(event) ? 'pointer' : '';
+    canvas.elt.style.cursor = !throwState && isOverDice(event) ? 'pointer' : '';
   });
   if (IS_TOUCH) adaptCopyForTouch();
   describe('Würfel 시작화면. 중앙 주사위와 W, ü, r, f, e, l 이미지 버튼.');
+}
+
+function closeCurrentView() {
+  if (writingMode === 'lolling') closeLolling();
+  else if (writingMode === 'remember') closeRemember();
+  else if (writingMode === 'experiment') closeExperiment();
+  else closeWriting();
 }
 
 // 화면에 보이는 주사위 영역(손가락 여유 16px 포함) 안을 눌렀는지 확인합니다.
@@ -200,6 +214,7 @@ function draw() {
   const targetY = lollingWorld ? lollingWorld.dice.position.y : height - Math.max(height * .13, halfSize + 16) - 30; // 위로 30위
   const offsetX = (targetX - width / 2) * writingViewProgress / viewScale;
   const screenOffset = (5 - (targetY - height / 2 + 5) * writingViewProgress) / viewScale;
+  diceScreenShift = [(targetX - width / 2) * writingViewProgress, (targetY - height / 2 - 5) * writingViewProgress];
   ortho(-width / (2 * viewScale) - offsetX, width / (2 * viewScale) - offsetX,
     -height / (2 * viewScale) - screenOffset,
     height / (2 * viewScale) - screenOffset, 0.1, 3000);
@@ -371,8 +386,8 @@ function getDiceScreenBounds() {
     const py = v[1] + FLOOR_Y - supportHeight() - lift - centerY;
     const pz = v[2] + positionZ;
     points.push([
-      width / 2 + scale * (px * 760 - pz * 380) / horizontal,
-      height / 2 + 5 + scale * (px * 380 * 510 / (horizontal * distance) + py * horizontal / distance + pz * 760 * 510 / (horizontal * distance))
+      width / 2 + diceScreenShift[0] + scale * (px * 760 - pz * 380) / horizontal,
+      height / 2 + 5 + diceScreenShift[1] + scale * (px * 380 * 510 / (horizontal * distance) + py * horizontal / distance + pz * 760 * 510 / (horizontal * distance))
     ]);
   }
   return { left: Math.min(...points.map(p => p[0])), right: Math.max(...points.map(p => p[0])),
