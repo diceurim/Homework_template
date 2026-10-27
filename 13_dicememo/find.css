@@ -2,7 +2,7 @@
 .is-find #findArchive { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; align-content: start; position: absolute; left: 5.5%; top: 15%; width: 23%; height: 70%; overflow-y: auto; pointer-events: auto; padding: 4px; }
 .find-card { aspect-ratio: .84; border: 1px solid transparent; border-radius: 4px; padding: 16px 12px; display: flex; align-items: flex-end; background: #d2d2d2; color: #555; cursor: pointer; text-align: left; font: 11px/1.4 var(--memo-sans); transition: transform .2s,background .2s; }
 .find-card:nth-child(4n+2), .find-card:nth-child(4n+3) { background: #8f8f8f; color: #fff; }
-.find-card:hover { background: #eee; color: #121212; transform: translateY(-3px); }
+@media (hover: hover) { .find-card:hover { background: #eee; color: #121212; transform: translateY(-3px); } }
 .find-card:focus-visible, .find-card[aria-pressed=true] { outline: 1px solid #fff; outline-offset: 2px; }
 .is-find .writing-column { left: auto; right: 7%; top: 21%; width: 27%; height: 60%; }
 .is-find .writing-prompt { margin-bottom: 22px; }

@@ -14,7 +14,7 @@ function openExperiment() {
   experimentReels = [];
   renderExperimentReels();
   if (empty) { document.getElementById('experimentClose').focus({preventScroll: true}); return; }
-  setExperimentStatus('마음에 드는 기록은 핀으로 고정하고, 손잡이를 당기거나 Space로 나머지를 다시 돌려보세요.');
+  setExperimentStatus(`마음에 드는 기록은 핀으로 고정하고, ${IS_TOUCH ? '손잡이를 당겨' : '손잡이를 당기거나 Space로'} 나머지를 다시 돌려보세요.`);
   spinExperiment();
 }
 
@@ -174,6 +174,7 @@ function setExperimentStatus(message) {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('experimentClose').addEventListener('click', closeExperiment);
   document.getElementById('experimentLever').addEventListener('click', pullLever);
+  document.getElementById('experimentSaveHint').addEventListener('click', saveExperiment);
   document.getElementById('experimentInput').addEventListener('keydown', event => {
     // 한글 조합을 확정하는 Enter는 저장으로 처리하지 않습니다. Shift+Enter는 줄바꿈.
     if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && event.keyCode !== 229) {

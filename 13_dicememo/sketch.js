@@ -33,6 +33,8 @@ let diceAudio = null;
 let impactNoise = null;
 let memoElement = null;
 const MEMO_STORAGE_KEY = 'dice-w-memo-v1';
+// 아이패드처럼 마우스 대신 손가락으로 조작하는 기기인지 확인합니다.
+const IS_TOUCH = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
 async function setup() {
   // p5.js 2.x에서는 preload 대신 async setup에서 로딩을 기다립니다.
@@ -79,7 +81,28 @@ async function setup() {
   assetsReady = true;
   setupFaceButtons();
   setupWriting();
+  // 주사위를 클릭하거나 탭하면 스페이스바처럼 무작위로 굴립니다.
+  canvas.elt.addEventListener('click', event => { if (isOverDice(event)) rollDice(); });
+  canvas.elt.addEventListener('pointermove', event => {
+    canvas.elt.style.cursor = !writingOpen && !throwState && isOverDice(event) ? 'pointer' : '';
+  });
+  if (IS_TOUCH) adaptCopyForTouch();
   describe('Würfel 시작화면. 중앙 주사위와 W, ü, r, f, e, l 이미지 버튼.');
+}
+
+// 화면에 보이는 주사위 영역(손가락 여유 16px 포함) 안을 눌렀는지 확인합니다.
+function isOverDice(event) {
+  const canvasBox = event.currentTarget.getBoundingClientRect();
+  const x = event.clientX - canvasBox.left, y = event.clientY - canvasBox.top;
+  const dice = getDiceScreenBounds(), pad = 16;
+  return x >= dice.left - pad && x <= dice.right + pad && y >= dice.top - pad && y <= dice.bottom + pad;
+}
+
+// 키보드가 없는 기기에서는 스페이스바·Enter 안내를 탭 안내로 바꿉니다.
+function adaptCopyForTouch() {
+  document.querySelector('.instruction .ko').innerHTML = '버튼을 눌러 영감을 기록할 수는 있지만,<br>가능한 <u>주사위를 탭</u>해서 굴려보세요';
+  document.querySelector('.instruction .de').innerHTML = 'Du kannst deine Inspirationen auch per Tipp auf den Button festhalten.<br>Versuch aber, möglichst <u>auf den Würfel zu tippen</u>, um zu würfeln!';
+  document.querySelectorAll('.save-hint').forEach(hint => { hint.textContent = '탭해서 저장하기'; });
 }
 
 // PNG의 알파값을 유지해서 투명한 부분 너머로 장면이 보이도록 합니다.

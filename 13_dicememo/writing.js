@@ -42,6 +42,8 @@ function setupWriting() {
   };
   setWritingDate(todayForWriting());
   document.getElementById('writingClose').addEventListener('click', closeWriting);
+  // Enter 외에 저장 안내를 눌러도 저장됩니다(키보드가 없는 터치 기기용).
+  document.getElementById('saveHint').addEventListener('click', saveWriting);
   writingElements.dateButton.addEventListener('click', () => {
     const panel = writingElements.datePanel;
     panel.hidden = !panel.hidden;

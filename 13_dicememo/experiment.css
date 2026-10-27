@@ -32,7 +32,8 @@
 /* 핀: 칸 왼쪽의 원형 버튼. 고정하면 흰 원으로 채워집니다. */
 .reel-pin { align-self: center; width: 40px; height: 40px; padding: 0; display: grid; place-items: center; border: 1.5px solid currentColor; border-radius: 50%; background: #121212; color: #bcbcbc; cursor: pointer; transition: color .15s, background .15s; }
 .reel-pin svg { width: 18px; height: 18px; }
-.reel-pin:hover:not(:disabled), .reel-pin:focus-visible { color: #fff; outline: none; }
+.reel-pin:focus-visible { color: #fff; outline: none; }
+@media (hover: hover) { .reel-pin:hover:not(:disabled) { color: #fff; } }
 .reel-pin[aria-pressed=true] { background: #fff; border-color: #fff; color: #121212; }
 .reel-pin[aria-pressed=true] svg { fill: currentColor; }
 .reel-pin:disabled { opacity: .35; cursor: default; }
@@ -43,7 +44,7 @@
 .lever-base::after { content: ''; position: absolute; left: 50%; top: 10px; width: 16px; height: 46px; margin-left: -8px; border-radius: 8px; background: #6d6d6d; }
 .lever-arm { position: absolute; left: 50%; bottom: 30px; width: 8px; height: 124px; margin-left: -4px; border-radius: 4px; background: #bcbcbc; transform-origin: 50% 100%; }
 .lever-knob { position: absolute; left: 50%; top: -16px; width: 32px; height: 32px; margin-left: -16px; border-radius: 50%; background: #fff; transition: transform .15s; }
-.slot-lever:hover:not(:disabled) .lever-knob { transform: scale(1.08); }
+@media (hover: hover) { .slot-lever:hover:not(:disabled) .lever-knob { transform: scale(1.08); } }
 .slot-lever:focus-visible { outline: none; }
 .slot-lever:focus-visible .lever-knob { outline: 1px solid #fff; outline-offset: 3px; }
 .slot-lever:disabled { opacity: .35; cursor: default; }
